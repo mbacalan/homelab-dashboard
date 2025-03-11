@@ -177,7 +177,7 @@ fastify.register(async function(fastify) {
 
 try {
   await fastify.listen({
-    host: process.env.SERVER_HOST,
+    host: process.env.SERVER_HOST ?? '0.0.0.0',
     port: 3001
   })
 } catch (err) {

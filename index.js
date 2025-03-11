@@ -11,7 +11,7 @@ const dom = {
 
 const serverUpRegex = /^\[\d{2}:\d{2}:\d{2} INFO\]: Done \(\d+\.\d+s\)! For help, type "help"\n$/;
 
-const ws = new WebSocket(`ws://${import.meta.env.VITE_API_URL}`);
+const ws = new WebSocket(`wss://${import.meta.env.VITE_API_URL}`);
 ws.onopen = () => {
   checkServerStatus()
 };
