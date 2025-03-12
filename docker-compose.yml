@@ -41,6 +41,8 @@ services:
     volumes:
       - .:/app
       - /home/mbacalan/games/minecraft:/app/minecraft
+      - /home/mbacalan/games/abioticfactor:/app/abioticfactor
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "3001:3001" # Server/API
       - "25565:25565" # Minecraft Server
