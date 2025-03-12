@@ -11,6 +11,7 @@ const fastify = Fastify({
 })
 
 let serverProcess = null;
+let abioticProcess = null;
 
 await fastify.register(ws)
 
@@ -167,6 +168,108 @@ fastify.register(async function(fastify) {
           connection.socket.send(JSON.stringify({
             message: "status",
             online: false,
+            error: err.message
+          }))
+        }
+      }
+    })
+  })
+
+  fastify.get('/abiotic', { websocket: true }, (connection) => {
+    connection.socket.on("message", async message => {
+      if (message == "start") {
+        abioticProcess = spawn('bash', [
+          './start-abiotic.sh'
+        ])
+
+        // Handle process startup
+        abioticProcess.once('spawn', () => {
+          connection.socket.send(JSON.stringify({
+            message: "start",
+            event: "spawn",
+            success: true
+          }))
+        })
+
+        // Handle stdout
+        abioticProcess.stdout.on('data', (data) => {
+          const output = data.toString()
+          connection.socket.send(JSON.stringify({
+            message: "start",
+            event: "data",
+            data: output
+          }))
+
+          if (output.includes("started successfully")) {
+            connection.socket.send(JSON.stringify({
+              message: "start",
+              event: "ready",
+              success: true
+            }))
+          }
+        })
+
+        // Handle stderr
+        abioticProcess.stderr.on('data', (data) => {
+          connection.socket.send(JSON.stringify({
+            message: "start",
+            event: "error",
+            error: data.toString()
+          }))
+        })
+
+        // Handle process exit
+        abioticProcess.on('exit', (code, signal) => {
+          abioticProcess = null
+          connection.socket.send(JSON.stringify({
+            message: "start",
+            event: "exit",
+            code,
+            signal
+          }))
+        })
+
+        // Handle process errors
+        abioticProcess.on('error', (err) => {
+          abioticProcess = null
+          connection.socket.send(JSON.stringify({
+            message: "start",
+            event: "error",
+            error: err.message
+          }))
+        })
+      }
+
+      if (message == "stop") {
+        if (!abioticProcess) {
+          connection.socket.send(JSON.stringify({
+            message: "stop",
+            event: "error",
+            error: "Server is not running"
+          }))
+          return
+        }
+
+        try {
+          abioticProcess = spawn('bash', [
+            './stop-abiotic.sh'
+          ])
+
+          // Wait for process to exit
+          abioticProcess.on('exit', (code, signal) => {
+            abioticProcess = null
+            connection.socket.send(JSON.stringify({
+              message: "stop",
+              event: "exit",
+              success: true,
+              code,
+              signal
+            }))
+          })
+        } catch (err) {
+          connection.socket.send(JSON.stringify({
+            message: "stop",
+            event: "error",
             error: err.message
           }))
         }

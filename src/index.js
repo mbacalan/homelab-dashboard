@@ -1,7 +1,9 @@
 const dom = {
   serverStartButton: document.getElementById("server-start-button"),
+  abioticStartButton: document.getElementById("server-start-button-abiotic"),
   serverStatusButton: document.getElementById("server-status-button"),
   serverStatusText: document.getElementById("server-status-text"),
+  abioticServerStatusText: document.getElementById("server-status-text-abiotic"),
   serverStatusDetails: document.getElementById("server-status-details"),
   serverStatusVersion: document.getElementById("server-status-version"),
   serverStatusPlayers: document.getElementById("server-status-players"),
@@ -12,6 +14,8 @@ const dom = {
 const serverUpRegex = /^\[\d{2}:\d{2}:\d{2} INFO\]: Done \(\d+\.\d+s\)! For help, type "help"\n$/;
 
 const ws = new WebSocket(`wss://${import.meta.env.VITE_API_URL}`);
+const abioticWS = new WebSocket(`wss://${import.meta.env.VITE_API_URL}/abiotic`);
+
 ws.onopen = () => {
   checkServerStatus()
 };
@@ -23,6 +27,8 @@ ws.onclose = () => {
 window.onload = async () => {
   dom.serverStatusButton.addEventListener("click", checkServerStatus)
   dom.serverStartButton.addEventListener("click", toggleServer)
+
+  dom.abioticStartButton.addEventListener("click", toggleServerAbiotic)
 
   ws.onmessage = (event) => {
     const eventData = JSON.parse(event.data)
@@ -197,4 +203,12 @@ function toggleServer() {
     dom.serverStatusText.setAttribute("aria-busy", true)
     ws.send("stop")
   }
+}
+
+function toggleServerAbiotic() {
+  if (ws.readyState != ws.OPEN) {
+    dom.serverStatusText.innerText = "WS connection failed, refresh and try again"
+  }
+
+  abioticWS.send("start")
 }
