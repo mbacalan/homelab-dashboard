@@ -1,27 +1,6 @@
-import type { EventData } from "./types";
-
-function getElementById<T extends HTMLElement>(id: string): T {
-  const element = document.getElementById(id);
-
-  if (!element) {
-    throw new Error(`Missing DOM element: #${id}`);
-  }
-
-  return element as T;
-}
-
-const dom = {
-  serverStartButton: getElementById("server-start-button"),
-  abioticStartButton: getElementById("server-start-button-abiotic"),
-  serverStatusButton: getElementById("server-status-button"),
-  serverStatusText: getElementById("server-status-text"),
-  abioticServerStatusText: getElementById("server-status-text-abiotic"),
-  serverStatusDetails: getElementById("server-status-details"),
-  serverStatusVersion: getElementById("server-status-version"),
-  serverStatusPlayers: getElementById("server-status-players"),
-  serverStatusLog: getElementById("server-status-log"),
-  serverStatusLogEmpty: getElementById("server-status-log-empty"),
-}
+import type { EventData } from "./types.ts";
+import { dom } from "./lib/dom.ts";
+import { ServerStatusHandler } from "./lib/server-handler.ts";
 
 const serverUpRegex = /^\[\d{2}:\d{2}:\d{2} INFO\]: Done \(\d+\.\d+s\)! For help, type "help"\n$/;
 
@@ -61,70 +40,6 @@ window.onload = async () => {
       onProcessStatusCheck(eventData)
     }
   };
-}
-
-class ServerStatusHandler {
-  online: boolean
-
-  constructor() {
-    this.online = false
-  }
-
-  handleStart() {
-    dom.serverStatusText.setAttribute("aria-busy", "true")
-    dom.serverStatusText.innerText = "Starting server..."
-    dom.serverStartButton.innerText = "Start Server"
-    this._disableServerStartButton();
-    this._hideServerStatusDetails();
-    this.online = false
-  }
-
-  handleStatusError() {
-    dom.serverStatusText.setAttribute("aria-busy", "false")
-    dom.serverStatusText.innerText = "❌ Error checking server status"
-    dom.serverStartButton.innerText = "Start Server"
-    this._hideServerStatusDetails();
-    this._disableServerStartButton();
-    this.online = false
-  }
-
-  handleOffline() {
-    dom.serverStatusText.setAttribute("aria-busy", "false")
-    dom.serverStatusText.innerText = "🔴 Server is not running"
-    dom.serverStartButton.innerText = "Start Server"
-    this._hideServerStatusDetails();
-    this._enableServerStartButton();
-    this.online = false
-  }
-
-  handleOnline() {
-    dom.serverStatusText.setAttribute("aria-busy", "false")
-    dom.serverStatusText.innerText = "🟢 Server is running"
-    dom.serverStartButton.innerText = "Stop Server"
-    this._enableServerStartButton();
-    this.online = true
-  }
-
-  handleServerError(message: string) {
-    dom.serverStatusText.setAttribute("aria-busy", "false")
-    dom.serverStatusText.innerText = message ? `❌ ${message}` : "❌ An error occured on server!"
-    dom.serverStartButton.innerText = "Start Server"
-    this._hideServerStatusDetails();
-    this._disableServerStartButton();
-    this.online = false
-  }
-
-  _hideServerStatusDetails() {
-    dom.serverStatusDetails.setAttribute("hidden", "true")
-  }
-
-  _disableServerStartButton() {
-    dom.serverStartButton.setAttribute("disabled", "true")
-  }
-
-  _enableServerStartButton() {
-    dom.serverStartButton.removeAttribute("disabled")
-  }
 }
 
 const serverStatusHandler = new ServerStatusHandler()

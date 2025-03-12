@@ -7,7 +7,7 @@
     "dev": "vite --host",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "server": "node src/server.js"
+    "server": "node src/server/server.js"
   },
   "dependencies": {
     "@fastify/websocket": "^8.3.1",
