@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "preview": "vite preview",
     "server": "node src/server.js"
   },
@@ -16,6 +16,7 @@
     "minecraft-protocol": "^1.54.0"
   },
   "devDependencies": {
+    "typescript": "^5.8.2",
     "vite": "^6.2.1"
   }
 }
