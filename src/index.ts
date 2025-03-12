@@ -1,14 +1,26 @@
+import type { EventData } from "./types";
+
+function getElementById<T extends HTMLElement>(id: string): T {
+  const element = document.getElementById(id);
+
+  if (!element) {
+    throw new Error(`Missing DOM element: #${id}`);
+  }
+
+  return element as T;
+}
+
 const dom = {
-  serverStartButton: document.getElementById("server-start-button"),
-  abioticStartButton: document.getElementById("server-start-button-abiotic"),
-  serverStatusButton: document.getElementById("server-status-button"),
-  serverStatusText: document.getElementById("server-status-text"),
-  abioticServerStatusText: document.getElementById("server-status-text-abiotic"),
-  serverStatusDetails: document.getElementById("server-status-details"),
-  serverStatusVersion: document.getElementById("server-status-version"),
-  serverStatusPlayers: document.getElementById("server-status-players"),
-  serverStatusLog: document.getElementById("server-status-log"),
-  serverStatusLogEmpty: document.getElementById("server-status-log-empty"),
+  serverStartButton: getElementById("server-start-button"),
+  abioticStartButton: getElementById("server-start-button-abiotic"),
+  serverStatusButton: getElementById("server-status-button"),
+  serverStatusText: getElementById("server-status-text"),
+  abioticServerStatusText: getElementById("server-status-text-abiotic"),
+  serverStatusDetails: getElementById("server-status-details"),
+  serverStatusVersion: getElementById("server-status-version"),
+  serverStatusPlayers: getElementById("server-status-players"),
+  serverStatusLog: getElementById("server-status-log"),
+  serverStatusLogEmpty: getElementById("server-status-log-empty"),
 }
 
 const serverUpRegex = /^\[\d{2}:\d{2}:\d{2} INFO\]: Done \(\d+\.\d+s\)! For help, type "help"\n$/;
@@ -31,7 +43,7 @@ window.onload = async () => {
   dom.abioticStartButton.addEventListener("click", toggleServerAbiotic)
 
   ws.onmessage = (event) => {
-    const eventData = JSON.parse(event.data)
+    const eventData: EventData = JSON.parse(event.data)
 
     if (eventData.message == "start" && eventData.event == "spawn") {
       onProcessSpawn(eventData)
@@ -52,12 +64,14 @@ window.onload = async () => {
 }
 
 class ServerStatusHandler {
+  online: boolean
+
   constructor() {
     this.online = false
   }
 
   handleStart() {
-    dom.serverStatusText.setAttribute("aria-busy", true)
+    dom.serverStatusText.setAttribute("aria-busy", "true")
     dom.serverStatusText.innerText = "Starting server..."
     dom.serverStartButton.innerText = "Start Server"
     this._disableServerStartButton();
@@ -66,7 +80,7 @@ class ServerStatusHandler {
   }
 
   handleStatusError() {
-    dom.serverStatusText.setAttribute("aria-busy", false)
+    dom.serverStatusText.setAttribute("aria-busy", "false")
     dom.serverStatusText.innerText = "❌ Error checking server status"
     dom.serverStartButton.innerText = "Start Server"
     this._hideServerStatusDetails();
@@ -75,7 +89,7 @@ class ServerStatusHandler {
   }
 
   handleOffline() {
-    dom.serverStatusText.setAttribute("aria-busy", false)
+    dom.serverStatusText.setAttribute("aria-busy", "false")
     dom.serverStatusText.innerText = "🔴 Server is not running"
     dom.serverStartButton.innerText = "Start Server"
     this._hideServerStatusDetails();
@@ -84,16 +98,16 @@ class ServerStatusHandler {
   }
 
   handleOnline() {
-    dom.serverStatusText.setAttribute("aria-busy", false)
+    dom.serverStatusText.setAttribute("aria-busy", "false")
     dom.serverStatusText.innerText = "🟢 Server is running"
     dom.serverStartButton.innerText = "Stop Server"
     this._enableServerStartButton();
     this.online = true
   }
 
-  handleServerError(message) {
-    dom.serverStatusText.setAttribute("aria-busy", false)
-    dom.serverStatusText.innerText = `❌ ${message}` ?? "❌ An error occured on server!"
+  handleServerError(message: string) {
+    dom.serverStatusText.setAttribute("aria-busy", "false")
+    dom.serverStatusText.innerText = message ? `❌ ${message}` : "❌ An error occured on server!"
     dom.serverStartButton.innerText = "Start Server"
     this._hideServerStatusDetails();
     this._disableServerStartButton();
@@ -101,11 +115,11 @@ class ServerStatusHandler {
   }
 
   _hideServerStatusDetails() {
-    dom.serverStatusDetails.setAttribute("hidden", true)
+    dom.serverStatusDetails.setAttribute("hidden", "true")
   }
 
   _disableServerStartButton() {
-    dom.serverStartButton.setAttribute("disabled", true)
+    dom.serverStartButton.setAttribute("disabled", "true")
   }
 
   _enableServerStartButton() {
@@ -117,12 +131,12 @@ const serverStatusHandler = new ServerStatusHandler()
 
 function checkServerStatus() {
   dom.serverStatusText.innerText = "Checking server status..."
-  dom.serverStatusText.setAttribute("aria-busy", true)
+  dom.serverStatusText.setAttribute("aria-busy", "true")
 
   ws.send("status")
 }
 
-function onProcessStatusCheck(eventData) {
+function onProcessStatusCheck(eventData: EventData) {
   if (eventData.event == "error") {
     serverStatusHandler.handleServerError(eventData?.error)
     return
@@ -137,7 +151,7 @@ function onProcessStatusCheck(eventData) {
   serverStatusHandler.handleOffline()
 }
 
-function onProcessSpawn(eventData) {
+function onProcessSpawn(eventData: EventData) {
   if (eventData.success) {
     serverStatusHandler.handleStart()
     return
@@ -146,7 +160,7 @@ function onProcessSpawn(eventData) {
   serverStatusHandler.handleStatusError()
 }
 
-function onProcessStart(eventData) {
+function onProcessStart(eventData: EventData) {
   const node = document.createElement("p")
 
   dom.serverStatusDetails.removeAttribute("hidden")
@@ -164,27 +178,27 @@ function onProcessStart(eventData) {
   }
 }
 
-function onProcessStop(eventData) {
+function onProcessStop(eventData: EventData) {
   if (eventData.success) {
     serverStatusHandler.handleOffline()
     clearServerDetails()
   }
 }
 
-function showServerDetails(data) {
+function showServerDetails(data: EventData) {
   dom.serverStatusDetails.removeAttribute("hidden")
   dom.serverStatusVersion.innerHTML = `<p>Version: ${data.version.name || "-"}</p>`
   dom.serverStatusPlayers.innerHTML = `<p>Online: ${data.players.online || "0"}</p>`
 }
 
 function clearServerDetails() {
-  dom.serverStatusDetails.setAttribute("hidden", true)
+  dom.serverStatusDetails.setAttribute("hidden", "true")
   dom.serverStatusVersion.innerHTML = ""
   dom.serverStatusPlayers.innerHTML = ""
 
-  do {
+  while (dom.serverStatusLog.firstChild) {
     dom.serverStatusLog.removeChild(dom.serverStatusLog.firstChild)
-  } while (dom.serverStatusLog.firstChild)
+  }
 }
 
 function toggleServer() {
@@ -194,13 +208,13 @@ function toggleServer() {
 
   if (!serverStatusHandler.online) {
     dom.serverStatusText.innerText = "Starting server..."
-    dom.serverStatusText.setAttribute("aria-busy", true)
+    dom.serverStatusText.setAttribute("aria-busy", "true")
     ws.send("start")
   }
 
   if (serverStatusHandler.online) {
     dom.serverStatusText.innerText = "Stopping server..."
-    dom.serverStatusText.setAttribute("aria-busy", true)
+    dom.serverStatusText.setAttribute("aria-busy", "true")
     ws.send("stop")
   }
 }
