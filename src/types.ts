@@ -5,7 +5,7 @@ export type EventData = {
   error: string
   success: boolean
   online: boolean
-  // from minecraft-protocol
+  // from minecraft server response
   players: {
     online: number
   }

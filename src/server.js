@@ -2,7 +2,7 @@
 
 import Fastify from "fastify";
 import ws from '@fastify/websocket'
-import MC from "minecraft-protocol"
+import { pingJava } from "@minescope/mineping";
 import { spawn } from "node:child_process"
 import path from "node:path"
 
@@ -155,9 +155,8 @@ fastify.register(async function(fastify) {
         }
 
         try {
-          const status = await MC.ping({
-            host: process.env.MC_SERVER_URL,
-            port: process.env.MC_SERVER_PORT
+          const status = await pingJava(process.env.MC_SERVER_URL, {
+            ping: process.env.MC_SERVER_PORT
           })
           connection.socket.send(JSON.stringify({
             message: "status",
