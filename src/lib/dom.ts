@@ -9,15 +9,19 @@ function getElementById<T extends HTMLElement>(id: string): T {
 }
 
 export const dom = {
-  serverStartButton: getElementById("server-start-button"),
-  abioticStartButton: getElementById("server-start-button-abiotic"),
-  serverStatusButton: getElementById("server-status-button"),
-  serverStatusText: getElementById("server-status-text"),
-  abioticServerStatusText: getElementById("server-status-text-abiotic"),
-  serverStatusDetails: getElementById("server-status-details"),
-  serverStatusVersion: getElementById("server-status-version"),
-  serverStatusPlayers: getElementById("server-status-players"),
-  serverStatusLog: getElementById("server-status-log"),
-  serverStatusLogEmpty: getElementById("server-status-log-empty"),
+  minecraft: {
+    serverStartButton: getElementById("server-start-button"),
+    serverStatusButton: getElementById("server-status-button"),
+    serverStatusText: getElementById("server-status-text"),
+    serverStatusDetails: getElementById("server-status-details"),
+    serverStatusVersion: getElementById("server-status-version"),
+    serverStatusPlayers: getElementById("server-status-players"),
+    serverStatusLog: getElementById("server-status-log"),
+    serverStatusLogEmpty: getElementById("server-status-log-empty"),
+  },
+  abiotic: {
+    serverStartButton: getElementById("server-start-button-abiotic"),
+    serverStatusText: getElementById("server-status-text-abiotic"),
+  }
 }
 
