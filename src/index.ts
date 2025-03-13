@@ -20,6 +20,14 @@ minecraftWs.onclose = () => {
   minecraftServerHandler.handleStatusError()
 }
 
+abioticWS.onopen = () => {
+  abioticServerHandler.checkServerStatus()
+};
+
+abioticWS.onclose = () => {
+  abioticServerHandler.handleStatusError()
+}
+
 window.onload = async () => {
   dom.minecraft.serverStatusButton.addEventListener("click", () => minecraftServerHandler.checkServerStatus())
   dom.minecraft.serverStartButton.addEventListener("click", () => minecraftServerHandler.toggleServer())
@@ -44,6 +52,7 @@ window.onload = async () => {
     }
   };
 
+  dom.abiotic.serverStatusButton.addEventListener("click", () => abioticServerHandler.checkServerStatus())
   dom.abiotic.serverStartButton.addEventListener("click", () => abioticServerHandler.toggleServer())
 
   abioticWS.onmessage = (event) => {
@@ -59,6 +68,10 @@ window.onload = async () => {
 
     if (eventData.message == "stop") {
       abioticProcessHandler.onProcessStop(eventData)
+    }
+
+    if (eventData.message == "status") {
+      abioticProcessHandler.onProcessStatusCheck(eventData)
     }
   };
 }

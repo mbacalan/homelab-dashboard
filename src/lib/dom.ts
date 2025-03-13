@@ -21,6 +21,7 @@ export const dom = {
   },
   abiotic: {
     serverStartButton: getElementById("server-start-button-abiotic"),
+    serverStatusButton: getElementById("server-status-button-abiotic"),
     serverStatusText: getElementById("server-status-text-abiotic"),
   }
 }

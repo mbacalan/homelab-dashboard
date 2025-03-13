@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process"
+import { getContainerStatus } from "./docker.js";
 
 /**
  * @param {import("@fastify/websocket").SocketStream} message
@@ -6,6 +7,24 @@ import { spawn } from "node:child_process"
  */
 export async function handleAbioticWS(connection, serverProcess) {
   connection.socket.on("message", async message => {
+    if (message == 'status') {
+      try {
+        const containerStatus = await getContainerStatus('abiotic-server');
+
+        connection.socket.send(JSON.stringify({
+          message: "status",
+          online: true,
+          ...containerStatus
+        }))
+      } catch (error) {
+        connection.socket.send(JSON.stringify({
+          message: "status",
+          online: false,
+          error: error.message
+        }))
+      }
+    }
+
     if (message == "start") {
       serverProcess = spawn('bash', [
         './start-abiotic.sh'
