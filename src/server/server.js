@@ -12,10 +12,14 @@ const fastify = Fastify({
   logger: true
 })
 
+fastify.get('/', async () => {
+  return { status: 'ok' }
+})
+
 await fastify.register(ws)
 
 fastify.register(async function(fastify) {
-  fastify.get("/", { websocket: true }, (connection) => {
+  fastify.get("/minecraft", { websocket: true }, (connection) => {
     handleMinecraftWS(connection, minecraftProcess)
   })
 
