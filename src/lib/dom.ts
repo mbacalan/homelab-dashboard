@@ -1,3 +1,5 @@
+import type { Games } from "../types";
+
 function getElementById<T extends HTMLElement>(id: string): T {
   const element = document.getElementById(id);
 
@@ -8,7 +10,7 @@ function getElementById<T extends HTMLElement>(id: string): T {
   return element as T;
 }
 
-export const dom = {
+export const dom: { [K in Games]: { [K: string]: HTMLElement } } = {
   minecraft: {
     serverStartButton: getElementById("server-start-button"),
     serverStatusButton: getElementById("server-status-button"),

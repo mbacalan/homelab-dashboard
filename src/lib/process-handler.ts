@@ -1,12 +1,12 @@
-import { EventData } from "../types.ts"
+import type { EventData, IServerHandler } from "../types.ts"
 import { dom } from "./dom.ts"
 
 const successRegex = /^(\[\d{2}:\d{2}:\d{2} INFO\]: Done \(\d+\.\d+s\)! For help, type "help"|Game server started successfully)\n$/;
 
 export class ProcessHandler {
-  serverHandler: any
+  serverHandler: IServerHandler
 
-  constructor(serverHandler: any) {
+  constructor(serverHandler: IServerHandler) {
     this.serverHandler = serverHandler
   }
 

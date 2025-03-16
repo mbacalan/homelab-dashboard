@@ -1,14 +1,12 @@
-import { EventData } from "../types.ts"
+import type { EventData, Games, IServerHandler } from "../types.ts"
 import { dom } from "./dom.ts"
 
-type Game = 'minecraft' | 'abiotic'
-
-export class ServerHandler {
+export class ServerHandler implements IServerHandler {
   online: boolean
-  game: Game
+  game: Games
   ws: WebSocket
 
-  constructor(game: Game, ws: WebSocket) {
+  constructor(game: Games, ws: WebSocket) {
     this.online = false
     this.game = game
     this.ws = ws
@@ -47,12 +45,14 @@ export class ServerHandler {
     }
 
     if (!this.online) {
+      dom[this.game].serverStatusButton.setAttribute("disabled", "true")
       dom[this.game].serverStatusText.innerText = "Starting server..."
       dom[this.game].serverStatusText.setAttribute("aria-busy", "true")
       this.ws.send("start")
     }
 
     if (this.online) {
+      dom[this.game].serverStatusButton.setAttribute("disabled", "true")
       dom[this.game].serverStatusText.innerText = "Stopping server..."
       dom[this.game].serverStatusText.setAttribute("aria-busy", "true")
       this.ws.send("stop")
@@ -62,6 +62,7 @@ export class ServerHandler {
   handleStart() {
     dom[this.game].serverStatusText.setAttribute("aria-busy", "true")
     dom[this.game].serverStatusText.innerText = "Starting server..."
+    dom[this.game].serverStatusButton.setAttribute("disabled", "true")
     dom[this.game].serverStartButton.innerText = "Start Server"
     this._disableServerStartButton();
     this._hideServerStatusDetails();
@@ -71,6 +72,7 @@ export class ServerHandler {
   handleStatusError() {
     dom[this.game].serverStatusText.setAttribute("aria-busy", "false")
     dom[this.game].serverStatusText.innerText = "❌ Error checking server status"
+    dom[this.game].serverStatusButton.removeAttribute("disabled")
     dom[this.game].serverStartButton.innerText = "Start Server"
     this._disableServerStartButton();
     this._hideServerStatusDetails();
@@ -80,6 +82,7 @@ export class ServerHandler {
   handleOffline() {
     dom[this.game].serverStatusText.setAttribute("aria-busy", "false")
     dom[this.game].serverStatusText.innerText = "🔴 Server is not running"
+    dom[this.game].serverStatusButton.removeAttribute("disabled")
     dom[this.game].serverStartButton.innerText = "Start Server"
     this._enableServerStartButton();
     this._hideServerStatusDetails();
@@ -89,6 +92,7 @@ export class ServerHandler {
   handleOnline() {
     dom[this.game].serverStatusText.setAttribute("aria-busy", "false")
     dom[this.game].serverStatusText.innerText = "🟢 Server is running"
+    dom[this.game].serverStatusButton.removeAttribute("disabled")
     dom[this.game].serverStartButton.innerText = "Stop Server"
     this._enableServerStartButton();
     this.online = true
@@ -97,6 +101,7 @@ export class ServerHandler {
   handleServerError(message: string) {
     dom[this.game].serverStatusText.setAttribute("aria-busy", "false")
     dom[this.game].serverStatusText.innerText = message ? `❌ ${message}` : "❌ An error occured on server!"
+    dom[this.game].serverStatusButton.removeAttribute("disabled")
     dom[this.game].serverStartButton.innerText = "Start Server"
     this._disableServerStartButton();
     this._hideServerStatusDetails();
