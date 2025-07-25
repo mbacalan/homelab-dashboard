@@ -17,7 +17,9 @@ export class ProcessHandler {
     }
 
     if (eventData.online) {
-      this.serverHandler.showServerDetails(eventData)
+      if (this.serverHandler.game == 'minecraft') {
+        this.serverHandler.showServerDetails(eventData)
+      }
       this.serverHandler.handleOnline()
       return
     }
