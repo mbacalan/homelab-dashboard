@@ -3,8 +3,11 @@ import { dom } from "./lib/dom.ts";
 import { ServerHandler } from "./lib/server-handler.ts";
 import { ProcessHandler } from "./lib/process-handler.ts";
 
-const minecraftWs = new WebSocket(`wss://${import.meta.env.VITE_API_URL}/minecraft`);
-const abioticWS = new WebSocket(`wss://${import.meta.env.VITE_API_URL}/abiotic`);
+const isLocal = import.meta.env.VITE_API_URL?.includes('localhost')
+
+const protocol = isLocal ? 'ws' : 'wss'
+const minecraftWs = new WebSocket(`${protocol}://${import.meta.env.VITE_API_URL}/minecraft`);
+const abioticWS = new WebSocket(`${protocol}://${import.meta.env.VITE_API_URL}/abiotic`);
 
 const minecraftServerHandler = new ServerHandler('minecraft', minecraftWs)
 const abioticServerHandler = new ServerHandler('abiotic', abioticWS)
