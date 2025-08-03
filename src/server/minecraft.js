@@ -1,12 +1,12 @@
 import { pingJava } from "@minescope/mineping";
-import path from "node:path"
 import { spawn } from "node:child_process"
+
+const serverProcess = null
 
 /**
  * @param {import("@fastify/websocket").SocketStream} message
- * @param {any} serverProcess
  */
-export function handleMinecraftWS(connection, serverProcess) {
+export function handleMinecraftWS(connection) {
   connection.socket.on("message", async message => {
     if (message == "start") {
       try {
@@ -20,11 +20,11 @@ export function handleMinecraftWS(connection, serverProcess) {
         }
 
         // Spawn the process and capture output directly
-        serverProcess = spawn('bash', [
-          path.join(process.env.MC_SERVER_DIR, 'start-server.sh')
-        ], {
-          cwd: process.env.MC_SERVER_DIR
-        })
+        serverProcess = spawn(
+          'java',
+          ['-Xms8192M', '-Xmx8192M', '-jar', 'paper.jar', 'nogui'],
+          { cwd: process.env.MC_SERVER_DIR }
+        )
 
         // Handle process startup
         serverProcess.once('spawn', () => {

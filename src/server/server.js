@@ -5,9 +5,6 @@ import ws from '@fastify/websocket'
 import { handleMinecraftWS } from "./minecraft.js";
 import { handleAbioticWS } from "./abiotic.js";
 
-let minecraftProcess = null;
-let abioticProcess = null;
-
 const fastify = Fastify({
   logger: true
 })
@@ -20,11 +17,11 @@ await fastify.register(ws)
 
 fastify.register(async function(fastify) {
   fastify.get("/minecraft", { websocket: true }, (connection) => {
-    handleMinecraftWS(connection, minecraftProcess)
+    handleMinecraftWS(connection)
   })
 
   fastify.get('/abiotic', { websocket: true }, (connection) => {
-    handleAbioticWS(connection, abioticProcess)
+    handleAbioticWS(connection)
   })
 })
 
