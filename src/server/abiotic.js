@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process"
 import { getContainerStatus } from "./docker.js";
 
-const serverProcess = null
+let serverProcess = null
 
 /**
  * @param {import("@fastify/websocket").SocketStream} message

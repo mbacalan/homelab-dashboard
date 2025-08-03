@@ -1,7 +1,7 @@
 import { pingJava } from "@minescope/mineping";
 import { spawn } from "node:child_process"
 
-const serverProcess = null
+let serverProcess = null
 
 /**
  * @param {import("@fastify/websocket").SocketStream} message
