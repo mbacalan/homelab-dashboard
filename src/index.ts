@@ -46,7 +46,7 @@ window.onload = async () => {
       minecraftProcessHandler.onProcessStart(eventData)
     }
 
-    if (eventData.message == "stop") {
+    if (eventData.message == "stop" || eventData.event == "exit") {
       minecraftProcessHandler.onProcessStop(eventData)
     }
 

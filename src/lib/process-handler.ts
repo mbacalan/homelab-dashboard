@@ -58,6 +58,12 @@ export class ProcessHandler {
     if (eventData.success) {
       this.serverHandler.handleOffline()
       this.serverHandler.clearServerDetails()
+      return
+    }
+
+    if (eventData.event == "error" || eventData.event == "exit") {
+      this.serverHandler.handleServerError(eventData?.error)
+      return
     }
   }
 }
