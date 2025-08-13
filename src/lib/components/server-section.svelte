@@ -20,7 +20,8 @@
 
   {#if $state.showDetails || ($state.online && $state.version)}
     <details open>
-      <summary class="secondary">Details</summary>
+      <!-- svelte-ignore a11y_no_redundant_roles : needed for Pico -->
+      <summary role="button" class="outline">Details</summary>
 
       {#if $state.version}
         <div>
