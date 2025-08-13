@@ -4,14 +4,14 @@ import { spawn } from "node:child_process"
 let serverProcess = null
 
 /**
- * @param {import("@fastify/websocket").SocketStream} message
+ * @param {import("@fastify/websocket").WebSocket} socket
  */
-export function handleMinecraftWS(connection) {
-  connection.socket.on("message", async message => {
+export function handleMinecraftWS(socket) {
+  socket.on("message", async message => {
     if (message == "start") {
       try {
         if (serverProcess) {
-          connection.socket.send(JSON.stringify({
+          socket.send(JSON.stringify({
             message: "start",
             event: "error",
             error: "Server is already running"
@@ -28,7 +28,7 @@ export function handleMinecraftWS(connection) {
 
         // Handle process startup
         serverProcess.once('spawn', () => {
-          connection.socket.send(JSON.stringify({
+          socket.send(JSON.stringify({
             message: "start",
             event: "spawn",
             success: true
@@ -38,14 +38,14 @@ export function handleMinecraftWS(connection) {
         // Handle stdout
         serverProcess.stdout.on('data', (data) => {
           const output = data.toString()
-          connection.socket.send(JSON.stringify({
+          socket.send(JSON.stringify({
             message: "start",
             event: "data",
             data: output
           }))
 
           if (output.includes("Done") && output.includes("For help, type")) {
-            connection.socket.send(JSON.stringify({
+            socket.send(JSON.stringify({
               message: "start",
               event: "ready",
               success: true
@@ -55,7 +55,7 @@ export function handleMinecraftWS(connection) {
 
         // Handle stderr
         serverProcess.stderr.on('data', (data) => {
-          connection.socket.send(JSON.stringify({
+          socket.send(JSON.stringify({
             message: "start",
             event: "error",
             error: data.toString()
@@ -65,7 +65,7 @@ export function handleMinecraftWS(connection) {
         // Handle process exit
         serverProcess.on('exit', (code, signal) => {
           serverProcess = null
-          connection.socket.send(JSON.stringify({
+          socket.send(JSON.stringify({
             message: "start",
             event: "exit",
             code,
@@ -76,7 +76,7 @@ export function handleMinecraftWS(connection) {
         // Handle process errors
         serverProcess.on('error', (err) => {
           serverProcess = null
-          connection.socket.send(JSON.stringify({
+          socket.send(JSON.stringify({
             message: "start",
             event: "error",
             error: err.message
@@ -84,7 +84,7 @@ export function handleMinecraftWS(connection) {
         })
 
       } catch (err) {
-        connection.socket.send(JSON.stringify({
+        socket.send(JSON.stringify({
           message: "start",
           event: "error",
           error: err.message
@@ -94,7 +94,7 @@ export function handleMinecraftWS(connection) {
 
     if (message == "stop") {
       if (!serverProcess) {
-        connection.socket.send(JSON.stringify({
+        socket.send(JSON.stringify({
           message: "stop",
           event: "error",
           error: "Server is not running"
@@ -117,7 +117,7 @@ export function handleMinecraftWS(connection) {
         serverProcess.once('exit', (code, signal) => {
           clearTimeout(forceStopTimeout)
           serverProcess = null
-          connection.socket.send(JSON.stringify({
+          socket.send(JSON.stringify({
             message: "stop",
             event: "exit",
             success: true,
@@ -126,7 +126,7 @@ export function handleMinecraftWS(connection) {
           }))
         })
       } catch (err) {
-        connection.socket.send(JSON.stringify({
+        socket.send(JSON.stringify({
           message: "stop",
           event: "error",
           error: err.message
@@ -136,7 +136,7 @@ export function handleMinecraftWS(connection) {
 
     if (message == "status") {
       if (!process.env.MC_SERVER_DIR || !process.env.MC_SERVER_URL || !process.env.MC_SERVER_PORT) {
-        connection.socket.send(JSON.stringify({
+        socket.send(JSON.stringify({
           message: "status",
           event: "error",
           error: "Server environment vars are not set properly!"
@@ -148,13 +148,13 @@ export function handleMinecraftWS(connection) {
         const status = await pingJava(process.env.MC_SERVER_URL, {
           ping: process.env.MC_SERVER_PORT
         })
-        connection.socket.send(JSON.stringify({
+        socket.send(JSON.stringify({
           message: "status",
           online: true,
           ...status
         }))
       } catch (err) {
-        connection.socket.send(JSON.stringify({
+        socket.send(JSON.stringify({
           message: "status",
           online: false,
           error: err.message

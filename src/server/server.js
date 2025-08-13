@@ -16,12 +16,12 @@ fastify.get('/', async () => {
 await fastify.register(ws)
 
 fastify.register(async function(fastify) {
-  fastify.get("/minecraft", { websocket: true }, (connection) => {
-    handleMinecraftWS(connection)
+  fastify.get("/minecraft", { websocket: true }, (socket) => {
+    handleMinecraftWS(socket)
   })
 
-  fastify.get('/abiotic', { websocket: true }, (connection) => {
-    handleAbioticWS(connection)
+  fastify.get('/abiotic', { websocket: true }, (socket) => {
+    handleAbioticWS(socket)
   })
 })
 

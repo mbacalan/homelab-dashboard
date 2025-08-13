@@ -2,123 +2,17 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="./node_modules/@picocss/pico/css/pico.min.css">
-  <link rel="stylesheet" href="./src/style/index.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="manifest" href="/site.webmanifest">
-
-  <title>Homelab Dashboard</title>
 </head>
 
 <body>
-  <header class="container minimal">
-    <hgroup>
-      <h1>Homelab Dashboard</h1>
-      <h2>Automation, media library & game servers</h2>
-    </hgroup>
-  </header>
-
-  <main class="container minimal">
-    <div class="grid">
-      <section>
-        <h2>ServArr</h2>
-
-        <ul>
-          <li>
-            Movies:
-            <a href="%VITE_RADARR_URL%" target="_blank" referrerpolicy="no-referrer">Radarr</a>
-          </li>
-
-          <li>
-            TV Shows:
-            <a href="%VITE_SONARR_URL%" target="_blank" referrerpolicy="no-referrer">Sonarr</a>
-          </li>
-
-          <li>
-            Subtitles:
-            <a href="%VITE_BAZARR_URL%" target="_blank" referrerpolicy="no-referrer">Bazarr</a>
-          </li>
-        </ul>
-      </section>
-
-      <section>
-        <h2>Utilities</h2>
-
-        <ul>
-          <li>
-            Torrent Client:
-            <a href="%VITE_QBIT_URL%" target="_blank" referrerpolicy="no-referrer">qBittorrent</a>
-          </li>
-
-          <li>
-            Indexer:
-            <a href="%VITE_PROWLARR_URL%" target="_blank" referrerpolicy="no-referrer">Prowlarr</a>
-          </li>
-
-          <li>
-            Captcha Solver:
-            <a href="%VITE_SOLVERR_URL%" target="_blank" referrerpolicy="no-referrer">FlareSolverr</a>
-          </li>
-        </ul>
-      </section>
-    </div>
-
-    <section>
-      <h2>Minecraft</h2>
-
-      <p id="server-status-text" aria-busy="true">
-        Checking server status...
-      </p>
-
-      <details id="server-status-details" hidden="true">
-        <summary role="button" class="secondary">Details</summary>
-        <div id="server-status-version"></div>
-        <div id="server-status-players"></div>
-        <div id="server-status-map">
-          <a href="%VITE_MCMAP_URL%" target="_blank" referrerpolicy="no-referrer">
-            View Map
-          </a>
-        </div>
-        <div id="server-status-log" class="log">
-          <p id="server-status-log-empty">Terminal output is empty</p>
-        </div>
-      </details>
-
-      <div class="grid">
-        <button id="server-status-button">
-          Check Status
-        </button>
-
-        <button id="server-start-button">
-          Start Server
-        </button>
-      </div>
-    </section>
-
-    <section>
-      <h2>Abiotic</h2>
-
-      <p id="server-status-text-abiotic" aria-busy="true">
-        Checking server status...
-      </p>
-
-      <div class="grid">
-        <button id="server-status-button-abiotic">
-          Check Status
-        </button>
-
-        <button id="server-start-button-abiotic">
-          Start Server
-        </button>
-      </div>
-    </section>
-  </main>
-
-  <script type="module" src="./src/index.js"></script>
+  <div id="app"></div>
+  <script type="module" src="/src/main.js"></script>
 </body>
 
 </html>

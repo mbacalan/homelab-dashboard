@@ -4,21 +4,21 @@ import { getContainerStatus } from "./docker.js";
 let serverProcess = null
 
 /**
- * @param {import("@fastify/websocket").SocketStream} message
+ * @param {import("@fastify/websocket").WebSocket} socket
  */
-export async function handleAbioticWS(connection) {
-  connection.socket.on("message", async message => {
+export async function handleAbioticWS(socket) {
+  socket.on("message", async message => {
     if (message == 'status') {
       try {
         const containerStatus = await getContainerStatus('abiotic-server');
 
-        connection.socket.send(JSON.stringify({
+        socket.send(JSON.stringify({
           message: "status",
           online: true,
           ...containerStatus
         }))
       } catch (error) {
-        connection.socket.send(JSON.stringify({
+        socket.send(JSON.stringify({
           message: "status",
           online: false,
           error: error.message
@@ -33,7 +33,7 @@ export async function handleAbioticWS(connection) {
 
       // Handle process startup
       serverProcess.once('spawn', () => {
-        connection.socket.send(JSON.stringify({
+        socket.send(JSON.stringify({
           message: "start",
           event: "spawn",
           success: true
@@ -43,14 +43,14 @@ export async function handleAbioticWS(connection) {
       // Handle stdout
       serverProcess.stdout.on('data', (data) => {
         const output = data.toString()
-        connection.socket.send(JSON.stringify({
+        socket.send(JSON.stringify({
           message: "start",
           event: "data",
           data: output
         }))
 
         if (output.includes("started successfully")) {
-          connection.socket.send(JSON.stringify({
+          socket.send(JSON.stringify({
             message: "start",
             event: "ready",
             success: true
@@ -60,7 +60,7 @@ export async function handleAbioticWS(connection) {
 
       // Handle stderr
       serverProcess.stderr.on('data', (data) => {
-        connection.socket.send(JSON.stringify({
+        socket.send(JSON.stringify({
           message: "start",
           event: "error",
           error: data.toString()
@@ -70,7 +70,7 @@ export async function handleAbioticWS(connection) {
       // Handle process errors
       serverProcess.on('error', (err) => {
         serverProcess = null
-        connection.socket.send(JSON.stringify({
+        socket.send(JSON.stringify({
           message: "start",
           event: "error",
           error: err.message
@@ -87,7 +87,7 @@ export async function handleAbioticWS(connection) {
         // Wait for process to exit
         serverProcess.on('exit', (code, signal) => {
           serverProcess = null
-          connection.socket.send(JSON.stringify({
+          socket.send(JSON.stringify({
             message: "stop",
             event: "exit",
             success: true,
@@ -96,7 +96,7 @@ export async function handleAbioticWS(connection) {
           }))
         })
       } catch (err) {
-        connection.socket.send(JSON.stringify({
+        socket.send(JSON.stringify({
           message: "stop",
           event: "error",
           error: err.message
