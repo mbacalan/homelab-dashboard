@@ -64,14 +64,14 @@
   <title>Homelab Dashboard</title>
 </svelte:head>
 
-<header class="container minimal">
+<header class="container">
   <hgroup>
     <h1>Homelab Dashboard</h1>
     <h2>Automation, media library & game servers</h2>
   </hgroup>
 </header>
 
-<main class="container minimal">
+<main class="container">
   <div class="grid">
     <LinkSection title="ServArr" links={servarrLinks} />
     <LinkSection title="Utilities" links={utilityLinks} />
