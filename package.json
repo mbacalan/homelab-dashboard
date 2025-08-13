@@ -12,10 +12,10 @@
     "server": "node src/server/server.js"
   },
   "dependencies": {
-    "@fastify/websocket": "^8.3.1",
+    "@fastify/websocket": "^11.2.0",
     "@minescope/mineping": "^1.6.1",
     "@picocss/pico": "^1.5.13",
-    "fastify": "^4.29.0"
+    "fastify": "^5.5.0"
   },
   "devDependencies": {
     "typescript": "^5.8.2",
