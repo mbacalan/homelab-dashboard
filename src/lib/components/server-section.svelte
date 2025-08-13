@@ -23,35 +23,37 @@
       <!-- svelte-ignore a11y_no_redundant_roles : needed for Pico -->
       <summary role="button" class="outline">Details</summary>
 
-      {#if $state.version}
-        <div>
-          <p>Version: {$state.version.name || "-"}</p>
-        </div>
-      {/if}
+      <article>
+        {#if $state.version}
+          <div>
+            <p>Version: {$state.version.name || "-"}</p>
+          </div>
+        {/if}
 
-      {#if $state.players}
-        <div>
-          <p>Online: {$state.players.online || "0"}</p>
-        </div>
-      {/if}
+        {#if $state.players}
+          <div>
+            <p>Online: {$state.players.online || "0"}</p>
+          </div>
+        {/if}
 
-      {#if showMap}
-        <div>
-          <a href={mapUrl} target="_blank" rel="noreferrer"> View Map </a>
-        </div>
-      {/if}
+        {#if showMap}
+          <div>
+            <a href={mapUrl} target="_blank" rel="noreferrer"> View Map </a>
+          </div>
+        {/if}
 
-      {#if $state.logs}
-        <div class="log">
-          {#if $state.logs.length === 0}
-            <p>Terminal output is empty</p>
-          {:else}
-            {#each $state.logs as log}
-              <p>{log}</p>
-            {/each}
-          {/if}
-        </div>
-      {/if}
+        {#if $state.logs}
+          <div class="log">
+            {#if $state.logs.length === 0}
+              <p>Terminal output is empty</p>
+            {:else}
+              {#each $state.logs as log}
+                <p>{log}</p>
+              {/each}
+            {/if}
+          </div>
+        {/if}
+      </article>
     </details>
   {/if}
 
