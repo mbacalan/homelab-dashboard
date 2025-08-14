@@ -3,8 +3,6 @@ import type { Games, GameState, EventData } from '../types.js';
 import type { Writable } from 'svelte/store';
 
 export class MessageHandler {
-  private readonly successRegex = /^(\[\d{2}:\d{2}:\d{2} INFO\]: Done \(\d+\.\d+s\)! For help, type "help"|Game server started successfully)\n$/;
-
   handleConnectionError(game: Games): void {
     const state = this.getStateStore(game);
     state.update(s => ({
@@ -36,6 +34,8 @@ export class MessageHandler {
       this.handleProcessStop('minecraft', eventData);
     } else if (eventData.message === "status") {
       this.handleStatusCheck('minecraft', eventData);
+    } else if (eventData.message === "start" && eventData.event === "ready" && eventData.success === true) {
+      this.handleStartSuccess('minecraft');
     }
   }
 
@@ -50,7 +50,21 @@ export class MessageHandler {
       this.handleProcessStop('abiotic', eventData);
     } else if (eventData.message === "status") {
       this.handleStatusCheck('abiotic', eventData);
+    } else if (eventData.message === "start" && eventData.event === "ready" && eventData.success === true) {
+      this.handleStartSuccess('abiotic');
     }
+  }
+
+  private handleStartSuccess(game: Games): void {
+    const state = this.getStateStore(game)
+
+    state.update(s => ({
+      ...s,
+      online: true,
+      isLoading: false,
+      statusText: "🟢 Server is running",
+      buttonDisabled: false
+    }))
   }
 
   private handleProcessSpawn(game: Games, eventData: EventData): void {
@@ -88,28 +102,21 @@ export class MessageHandler {
       buttonDisabled: false,
       online: false,
     }));
-
   }
 
   private handleProcessData(game: Games, eventData: EventData): void {
     if (game === 'minecraft' && eventData.data) {
       minecraftState.update(state => {
         const newLogs = [...(state.logs || []), eventData.data!];
-        const isSuccess = this.successRegex.test(eventData.data!);
 
         return {
           ...state,
           showDetails: true,
           logs: newLogs,
-          ...(isSuccess && {
-            online: true,
-            isLoading: false,
-            statusText: "🟢 Server is running",
-            buttonDisabled: false
-          })
         };
       });
-    } else if (eventData.data && this.successRegex.test(eventData.data)) {
+      // ????
+    } else if (eventData.data) {
       abioticState.update(state => ({
         ...state,
         online: true,
